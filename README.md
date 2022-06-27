@@ -6,7 +6,7 @@ An `OrderedSet` is a combination of a linked list and a hash map. As values are 
 their list element pointers are stored in a hash map. This way, set membership checks (is element 'x' in the set?)
 can be done in constant time. Comparatively equal (==) elements are not duplicated when they are added to the set.
 
-Think of an `OrderedSet` as queue of its own keys, where each key can be quickly looked up to find its position in the queue.
+Think of an `OrderedSet` as a queue of unique items, where each item's position in the queue can be quickly looked up by its value.
 
 Example usage of an ordered set:
 
