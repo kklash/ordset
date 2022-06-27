@@ -66,27 +66,37 @@ func New[T comparable](elems ...T) *OrderedSet[T] {
 }
 
 // Len returns the number of elements in the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Len() int {
 	return o.list.Len()
 }
 
 // Has returns true if the given value v is a member of the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Has(v T) bool {
 	_, exists := o.mapping[v]
 	return exists
 }
 
 // Front returns the element at the front of the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Front() T {
 	return o.list.Front().Value.(T)
 }
 
 // Back returns the element at the front of the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Back() T {
 	return o.list.Back().Value.(T)
 }
 
 // Append pushes a value to the back of the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Append(v T) bool {
 	if o.Has(v) {
 		return false
@@ -96,6 +106,8 @@ func (o *OrderedSet[T]) Append(v T) bool {
 }
 
 // Prepend pushes a value to the front of the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Prepend(v T) bool {
 	if o.Has(v) {
 		return false
@@ -106,6 +118,8 @@ func (o *OrderedSet[T]) Prepend(v T) bool {
 
 // Pop extracts and removes a value from the right of the OrderedSet. Returns a boolean true value
 // if an element was successfully popped. This will only ever be false if the OrderedSet is empty.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Pop() (v T, ok bool) {
 	if o.Len() > 0 {
 		elem := o.list.Back()
@@ -118,6 +132,8 @@ func (o *OrderedSet[T]) Pop() (v T, ok bool) {
 
 // Shift extracts and removes a value from the left of the OrderedSet. Returns a boolean true value
 // if an element was successfully popped. This will only ever be false if the OrderedSet is empty.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Shift() (v T, ok bool) {
 	if o.Len() > 0 {
 		elem := o.list.Front()
@@ -133,6 +149,8 @@ func (o *OrderedSet[T]) Shift() (v T, ok bool) {
 // immediately in front of mark.
 //
 // If the value v is already a member of the set, Insert is a no-op. Use the Move method to reorder set elements.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Insert(v, mark T, after bool) (added bool, err error) {
 	if !o.Has(mark) {
 		return false, ErrMarkNotFound
@@ -152,6 +170,8 @@ func (o *OrderedSet[T]) Insert(v, mark T, after bool) (added bool, err error) {
 // Move reorders repositions the set element value v relative to the given mark value.
 // If the after parameter is true, the value v is moved to immediately behind mark. If
 // after is false, v is moved to immediately in front of mark.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Move(v, mark T, after bool) (err error) {
 	if !o.Has(mark) {
 		return ErrMarkNotFound
@@ -166,6 +186,9 @@ func (o *OrderedSet[T]) Move(v, mark T, after bool) (err error) {
 	return nil
 }
 
+// Remove drops an element from the OrderedSet.
+//
+// This method runs in constant time.
 func (o *OrderedSet[T]) Remove(v T) bool {
 	if elem, ok := o.mapping[v]; ok {
 		o.list.Remove(elem)
@@ -175,6 +198,11 @@ func (o *OrderedSet[T]) Remove(v T) bool {
 	return false
 }
 
+// Range iterates through the OrderedSet from the front to the back, passing each element and its index
+// at the time of iteration. Be aware this index can change when the OrderedSet is mutated, and should
+// not be relied upon for operations on the OrderedSet.
+//
+// This method runs in O(N) time.
 func (o *OrderedSet[T]) Range(loop func(int, T) error) error {
 	i := 0
 	for elem := o.list.Front(); elem != nil; elem = elem.Next() {
@@ -187,6 +215,7 @@ func (o *OrderedSet[T]) Range(loop func(int, T) error) error {
 	return nil
 }
 
+// RangeReverse is the same as Range, except it iterates through the set from back to front.
 func (o *OrderedSet[T]) RangeReverse(loop func(int, T) error) error {
 	i := 0
 	for elem := o.list.Back(); elem != nil; elem = elem.Prev() {
@@ -199,6 +228,10 @@ func (o *OrderedSet[T]) RangeReverse(loop func(int, T) error) error {
 	return nil
 }
 
+// Slice iterates through the OrderedSet and compiles a slice containing each element in the set,
+// preserving set order.
+//
+// This method runs in O(N) time.
 func (o *OrderedSet[T]) Slice() []T {
 	slice := make([]T, o.Len())
 	o.Range(func(i int, v T) error {
